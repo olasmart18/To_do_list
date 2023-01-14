@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const env = require('dotenv').config();
 const { PORT } = process.env;
+const date = require(__dirname + "/date.js");
 
 
 const port = PORT;
@@ -12,24 +13,16 @@ app.use(bodyParser.urlencoded({ extended: "true" }));
 
 const items = [];
 const workItems = [];
-app.get("/", function (req, res) {
-    let date = new Date()
+app.get("/", function (req, res) { 
 
-    let options = {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-    };
-    let day = date.toLocaleDateString("en-US", options);
-
+let day = date.getDay()
     res.render("pages/index", { Tittle: day, newListItems: items });
 });
-
-
 
 app.post("/", function (req, res) {
     const item = req.body.newList;
     const list = req.body.list;
+
     if (list === "Work") {
         workItems.push(item);
         res.redirect("/work")
