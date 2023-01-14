@@ -8,30 +8,41 @@ const port = PORT;
 const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static("public"));
-app.use(bodyParser.urlencoded({extended: "true"}));
+app.use(bodyParser.urlencoded({ extended: "true" }));
 
 const items = [];
-app.get("/", function(req, res){
+const workItems = [];
+app.get("/", function (req, res) {
     let date = new Date()
-    // let currentDay = date.getDay()
-    // let today = currentDay ;
 
     let options = {
-        day : "numeric",
-        month : "long",
-        year : "numeric"
+        day: "numeric",
+        month: "long",
+        year: "numeric"
     };
     let day = date.toLocaleDateString("en-US", options);
-       
-        res.render("pages/index", {Tittle: day, newListItems: items });
+
+    res.render("pages/index", { Tittle: day, newListItems: items });
 });
 
-app.post("/", function(req, res){
-     const item = req.body.newList;
-     items.push(item)
-    res.redirect("/");
-})
 
-app.listen(port, function(){
+
+app.post("/", function (req, res) {
+    const item = req.body.newList;
+    const list = req.body.list;
+    if (list === "Work") {
+        workItems.push(item);
+        res.redirect("/work")
+    } else {
+        items.push(item);
+        res.redirect("/");
+    }
+});
+
+app.get("/work", function (req, res) {
+    res.render("pages/index", { Tittle: "Work List", newListItems: workItems });
+});
+
+app.listen(port, function () {
     console.log(`serving on port ${port}`);
-})
+});
